@@ -1,0 +1,50 @@
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+
+//此脚本为自动生成 切勿手动更改!!!
+
+public partial class #CLASSNAME#
+{
+    private Injection m_Injection;
+#FIELD_BIND#
+
+    public void InitUI(GameObject obj)
+    {
+        if (obj == null)
+        {
+            ClientLog.Instance.LogError("当前Panel传入的Obj为空");
+            return;
+        }
+        m_Injection = obj.GetComponent<Injection>();
+#METHOD_BIND#
+    }
+
+    public T GetComponentByString<T>(string cptName)
+    {
+        foreach (T component in from t in m_Injection.UIObjects where cptName == t.Name select t.Component.GetComponent<T>())
+        {
+            if (component is T)
+            {
+                return component;
+            }
+            else
+            {
+                ClientLog.Instance.LogError($"找到的组件 {cptName} 不是类型 {typeof(T)}");
+                return default(T);
+            }
+        }
+
+        ClientLog.Instance.LogError($"当前参数 {cptName} 无法匹配到对应的组件");
+        return default(T);
+    }
+
+    public GameObject GetComponentByString(string cptName)
+    {
+        foreach (var item in m_Injection.UIObjects)
+            if (cptName == item.Target.name)
+                return item.Target as GameObject;
+
+        return null;
+    }
+}
